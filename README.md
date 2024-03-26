@@ -1,4 +1,4 @@
-
+due to the size of the video, there will be 6-7 clip
 
 https://github.com/obica-ai/UR3_6dof_hanoi_tower/assets/79022618/2d75898a-c1d4-4e52-841e-ffb8f39d77b0
 
