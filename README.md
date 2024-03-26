@@ -1,4 +1,8 @@
 due to the size of the video, there will be 6-7 clip
+Record joint angles that position the robot arm at waypoints in the Tower of Hanoi solution
+• Modify the given starter python file to move the robot to waypoints and enable and disable the suction cup gripper such that the blocks are moved in the correct pattern.
+• If the robot suction senses that a block is not in the gripper when it should be, the program should halt with an error.
+• Program the robot to solve the Tower of Hanoi problem allowing the user to select any of three starting positions and ending positions.
 
 https://github.com/obica-ai/UR3_6dof_hanoi_tower/assets/79022618/2d75898a-c1d4-4e52-841e-ffb8f39d77b0
 
