@@ -24,11 +24,30 @@ SPIN_RATE = 20
 # UR3 home location
 home = np.radians([120, -90, 90, -90, -90, 0])
 
-# Hanoi tower location 1
+# Hanoi tower location 1 original
+# Q11 = [120*pi/180.0, -56*pi/180.0, 124*pi/180.0, -158*pi/180.0, -90*pi/180.0, 0*pi/180.0]
+# Q12 = [120*pi/180.0, -64*pi/180.0, 123*pi/180.0, -148*pi/180.0, -90*pi/180.0, 0*pi/180.0]
+# Q13 = [120*pi/180.0, -72*pi/180.0, 120*pi/180.0, -137*pi/180.0, -90*pi/180.0, 0*pi/180.0]
 Q11 = [120*pi/180.0, -56*pi/180.0, 124*pi/180.0, -158*pi/180.0, -90*pi/180.0, 0*pi/180.0]
 Q12 = [120*pi/180.0, -64*pi/180.0, 123*pi/180.0, -148*pi/180.0, -90*pi/180.0, 0*pi/180.0]
 Q13 = [120*pi/180.0, -72*pi/180.0, 120*pi/180.0, -137*pi/180.0, -90*pi/180.0, 0*pi/180.0]
 
+
+Qmove_A_h1 = [129*pi/180.0, -43.5*pi/180.0, 93*pi/180.0, -140.8*pi/180.0, -90*pi/180.0, 9.5*pi/180.0]
+Qmove_A_h2 = [129*pi/180.0, -48*pi/180.0, 92*pi/180.0, -134*pi/180.0, -90*pi/180.0, 9.2*pi/180.0]
+Qmove_A_h3 = [129*pi/180.0, -54*pi/180.0, 91*pi/180.0, -128*pi/180.0, -90*pi/180.0, 8.8*pi/180.0]
+
+Qmove_B_h1 = [133.5*pi/180.0, -46.2*pi/180.0, 100*pi/180.0, -142.5*pi/180.0, -90*pi/180.0, 13.5*pi/180.0]
+Qmove_B_h2 = [133.5*pi/180.0, -53*pi/180.0, 99*pi/180.0, -135*pi/180.0, -90*pi/180.0, 13.5*pi/180.0]
+Qmove_B_h3 = [133.5*pi/180.0, -57.5*pi/180.0, 97.2*pi/180.0, -128.5*pi/180.0, -90*pi/180.0, 13.5*pi/180.0]
+
+Qmove_C_h1 = [138.5*pi/180.0, -50*pi/180.0, 108*pi/180.0, -148*pi/180.0, -90*pi/180.0, 18.5*pi/180.0]
+Qmove_C_h2 = [138.5*pi/180.0, -55.5*pi/180.0, 107*pi/180.0, -141.5*pi/180.0, -90*pi/180.0, 18.5*pi/180.0]
+Qmove_C_h3 = [138.5*pi/180.0, -61.5*pi/180.0, 105.5*pi/180.0, -134*pi/180.0, -90*pi/180.0, 18.5*pi/180.0]
+
+Qmove_above_A  = [129*pi/180.0, -61.5*pi/180.0, 81.8*pi/180.0, -110*pi/180.0, -90*pi/180.0, 9.2*pi/180.0]
+Qmove_above_B = [133.5*pi/180.0, -65.5*pi/180.0, 92.5*pi/180.0, -116.8*pi/180.0, -90*pi/180.0, 13.5*pi/180.0]
+Qmove_above_C = [138.5*pi/180.0, -70*pi/180.0, 99*pi/180.0, -119*pi/180.0, -90*pi/180.0, 18.5*pi/180.0]
 thetas = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
 digital_in_0 = 0
@@ -46,10 +65,26 @@ current_position = copy.deepcopy(home)
 """
 TODO: Initialize Q matrix
 """
+"""
+Q =
+                  3,1   3,2
+        3,0 ABA   ABB   ABC 
+        2,0 Ah3   Bh3   Ch3 
+        1,0 Ah2   Bh2   Ch2 
+        0,0 Ah1   Bh1   Ch1 
+            0,0   0,1   0,2
+"""
+Q = [ [Qmove_A_h1, Qmove_A_h2, Qmove_A_h3,Qmove_above_A], \
+      [Qmove_B_h1, Qmove_B_h2, Qmove_B_h3,Qmove_above_B], \
+      [Qmove_C_h1, Qmove_C_h2, Qmove_C_h3,Qmove_above_C]
+      ]
 
-Q = [ [Q11, Q12, Q13], \
-      [Q11, Q12, Q13], \
-      [Q11, Q12, Q13] ]
+sH = [0,0,0]
+# Q[0][2] = Qmove_A_h3
+# Q[0][1] = Qmove_A_h2
+# Q[0][0] = Qmove_A_h1
+# Q[1][0] = Qmove_B_h1
+# Q[2][0] = Qmove_C_h1
 ############### Your Code End Here ###############
 
 ############## Your Code Start Here ##############
@@ -57,16 +92,6 @@ Q = [ [Q11, Q12, Q13], \
 """
 TODO: define a ROS topic callback funtion for getting the state of suction cup
 Whenever ur3/gripper_input publishes info this callback function is called.
-"""
-
-
-
-
-############### Your Code End Here ###############
-
-
-"""
-Whenever ur3/position publishes info, this callback function is called.
 """
 def position_callback(msg):
 
@@ -89,6 +114,21 @@ def position_callback(msg):
     current_position[5] = thetas[5]
 
     current_position_set = True
+
+
+
+############### Your Code End Here ###############
+
+
+"""
+Whenever ur3/position publishes info, this callback function is called.
+"""
+def gripper_callback(msg):
+
+    global gripper_on_off
+
+    gripper_on_off = msg.AIN0
+
 
 
 def gripper(pub_cmd, loop_rate, io_0):
@@ -179,16 +219,62 @@ def move_arm(pub_cmd, loop_rate, dest, vel, accel):
 
 
 ############## Your Code Start Here ##############
-
-def move_block(pub_cmd, loop_rate, start_loc, start_height, \
+## h_arr = [1, 1, 2, 1, 1, 2, 3]
+def move_block(pub_cmd, loop_rate, start_loc, height, \
                end_loc, end_height):
-    global Q
-
-    ### Hint: Use the Q array to map out your towers by location and "height".
-
+    global QA_up
+    global thetas
+    global SPIN_RATE
+    # Hanoi_tower_logic
+    
+    # start_height as each moving height
     error = 0
-
-
+    loop_rate.sleep()
+    aux_loc = 6 - start_loc-end_loc
+    # ### 
+    if(end_height ==1):
+        # move( start ====> end) base case
+        move_arm(pub_cmd, loop_rate, Q[start_loc-1][3], 2, 2)
+        move_arm(pub_cmd, loop_rate, Q[start_loc-1][height[start_loc-1]-1], 2, 2)
+        gripper(pub_cmd, loop_rate, suction_on)
+        time.sleep(1.0)
+        # no block
+        if gripper_on_off < 1.3:
+            rospy.loginfo("no block here")
+            return error
+        # put block to highest point
+        move_arm(pub_cmd, loop_rate, Q[start_loc - 1][3], 2, 2)
+        move_arm(pub_cmd, loop_rate, Q[end_loc - 1][3], 2, 2)
+        move_arm(pub_cmd, loop_rate, Q[end_loc - 1][height[end_loc - 1]], 2, 2)
+        gripper(pub_cmd, loop_rate, suction_off)
+        # back to highest point
+        move_arm(pub_cmd, loop_rate, Q[end_loc - 1][3], 2, 2)
+        height[start_loc-1] -=1
+        height[end_loc-1] +=1
+        return
+    # recursion
+    move_block(pub_cmd, loop_rate, start_loc, height, aux_loc, end_height-1)
+    
+    # # move( start ====> end) base case
+    move_arm(pub_cmd, loop_rate, Q[start_loc - 1][3], 2, 2)
+    move_arm(pub_cmd, loop_rate, Q[start_loc - 1][height[start_loc - 1]-1], 2, 2)
+    gripper(pub_cmd, loop_rate, suction_on)
+    time.sleep(1.0)
+    # no block
+    if gripper_on_off < 1.3:
+        rospy.loginfo("no block here")
+        return error
+    # put block to highest point
+    move_arm(pub_cmd, loop_rate, Q[start_loc - 1][3], 2, 2)
+    move_arm(pub_cmd, loop_rate, Q[end_loc - 1][3], 2, 2)
+    move_arm(pub_cmd, loop_rate, Q[end_loc - 1][height[end_loc - 1]], 2, 2)
+    gripper(pub_cmd, loop_rate, suction_off)
+    # back to highest point
+    move_arm(pub_cmd, loop_rate, Q[end_loc - 1][3], 2, 2)
+    height[start_loc-1] -=1
+    height[end_loc-1] += 1
+    # recursion
+    move_block(pub_cmd, loop_rate, aux_loc , height, end_loc, end_height - 1)
 
     return error
 
@@ -199,7 +285,15 @@ def move_block(pub_cmd, loop_rate, start_loc, start_height, \
 def main():
 
     global home
-    global Q
+    
+    global startloc,endloc
+    global heights,heighte 
+    heights = [0,0,0]
+    heighte = [0,0,0]
+    height = [0,0,0]
+    heightee = [0,0,0]
+    block = [1,2,3]
+    iter = 0
     global SPIN_RATE
 
     # Initialize ROS node
@@ -215,7 +309,7 @@ def main():
     ############## Your Code Start Here ##############
     # TODO: define a ROS subscriber for ur3/gripper_input message and corresponding callback function
 
-
+    gripper_status = rospy.Subscriber('ur3/gripper_input',gripper_input, gripper_callback)
     ############### Your Code End Here ###############
 
 
@@ -224,7 +318,9 @@ def main():
 
     input_done = 0
     loop_count = 0
-
+    input_dones = 0
+    input_donee = 0
+    # DETECT LOOP
     while(not input_done):
         input_string = input("Enter number of loops <Either 1 2 3 or 0 to quit> ")
         print("You entered " + input_string + "\n")
@@ -232,20 +328,65 @@ def main():
         if(int(input_string) == 1):
             input_done = 1
             loop_count = 1
+            
         elif (int(input_string) == 2):
             input_done = 1
             loop_count = 2
+            
         elif (int(input_string) == 3):
             input_done = 1
             loop_count = 3
+            
         elif (int(input_string) == 0):
             print("Quitting... ")
             sys.exit()
         else:
             print("Please just enter the character 1 2 3 or 0 to quit \n\n")
+            #detect strating location
+    while(not input_dones):
+        input_str = input("Enter starting point <Either A B C or 0 to quit> ")
+        print("You entered " + input_str + "\n")
+        if(input_str == "A"):
+            input_dones = 1
+            heights[0]  = 3
+            startloc = 1
+        elif (input_str == "B"):
+            input_dones = 1
+            heights[1]  = 3
+            startloc = 2
+        elif (input_str == "C"):
+            input_dones = 1
+            heights[2]  = 3
+            startloc = 3
+        elif (int(input_str) == 0):
+            print("Quitting... ")
+            sys.exit()
+        else:
+            print("Please just enter the character ABCor 0 to quit \n\n")
+            #detect ending location
+    while(not input_donee):
+        input_str = input("Enter starting point <Either A B C or 0 to quit> ")
+        print("You entered " + input_str + "\n")
+        if(input_str == "A"):
+            input_donee = 1
+            # recording the end height with end loc
+            endloc = 1
+            
+        elif (input_str == "B"):
+            input_donee = 1
+            endloc = 2
 
+            
+        elif (input_str == "C"):
+            input_donee = 1
+            endloc = 3
 
-
+            
+        elif (int(input_str) == 0):
+            print("Quitting... ")
+            sys.exit()
+        else:
+            print("Please just enter the character ABCor 0 to quit \n\n")   
 
 
     ############### Your Code End Here ###############
@@ -260,23 +401,15 @@ def main():
 
     ############## Your Code Start Here ##############
     # TODO: modify the code so that UR3 can move tower accordingly from user input
-
     while(loop_count > 0):
 
         move_arm(pub_command, loop_rate, home, 4.0, 4.0)
-
+        if startloc ==endloc:
+            rospy.loginfo("wrong input")
+            sys.exit()
         rospy.loginfo("Sending goal 1 ...")
-        move_arm(pub_command, loop_rate, Q[0][0], 4.0, 4.0)
-
-        gripper(pub_command, loop_rate, suction_on)
-        # Delay to make sure suction cup has grasped the block
-        time.sleep(1.0)
-
-        rospy.loginfo("Sending goal 2 ...")
-        move_arm(pub_command, loop_rate, Q[1][1], 4.0, 4.0)
-
-        rospy.loginfo("Sending goal 3 ...")
-        move_arm(pub_command, loop_rate, Q[2][0], 4.0, 4.0)
+        move_block(pub_command,loop_rate,startloc,heights,endloc,3)
+        move_arm(pub_command, loop_rate, home, 4.0, 4.0)
 
         loop_count = loop_count - 1
 
